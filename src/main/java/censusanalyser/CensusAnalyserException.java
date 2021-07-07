@@ -2,7 +2,7 @@ package censusanalyser;
 
 public class CensusAnalyserException extends Exception {
     enum ExceptionType {
-        CENSUS_DELIMITER_PROBLEM, CENSUS_HEADER_PROBLEM, CENSUS_FILE_PROBLEM,UNABLE_TO_PARSE
+        CENSUS_DELIMITER_PROBLEM, CENSUS_HEADER_PROBLEM, CENSUS_FILE_PROBLEM, NO_CENSUS_DATA, UNABLE_TO_PARSE
     }
 
     ExceptionType type;

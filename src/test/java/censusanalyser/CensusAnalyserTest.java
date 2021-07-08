@@ -11,6 +11,7 @@
         private static final String WRONG_CSV_FILE_PATH = "./src/main/resources/IndiaStateCensusData.csv";
         private static final String WRONG_EXTENSION_FILE_PATH = "./src/main/resources/IndiaStateCensusData.csv";
         private static final String INDIA_STATE_CSV_FILE_PATH = "./src/main/resources/IndiaStateCode.csv";
+        private static final String US_CENSUS_CSV_FILE_PATH = "./src/test/resources/USCensusData.csv";
 
         @Test
         public void givenIndianCensusCSVFileReturnsCorrectRecords() {
@@ -157,4 +158,14 @@
             } catch (CensusAnalyserException e) {
             }
         }
+
+        @Test
+        public void givenUSCensusData_ShouldReturnCorrectRecords() {
+            try {
+                CensusAnalyser censusAnalyser = new CensusAnalyser();
+                int censusDataCnt = censusAnalyser.loadUSCensusData(US_CENSUS_CSV_FILE_PATH);
+                Assert.assertEquals(5,censusDataCnt);
+            } catch (CensusAnalyserException e) {}
+        }
+
     }

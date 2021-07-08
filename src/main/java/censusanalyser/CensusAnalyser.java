@@ -87,7 +87,6 @@ public class CensusAnalyser {
                     censusCSVList.set(j, census2);
                     censusCSVList.set(j+1, census1);
                 }
-
             }
         }
     }

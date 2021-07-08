@@ -12,12 +12,12 @@ import java.util.stream.StreamSupport;
 
 public class CensusAnalyser {
 
-    Map<String, IndiaCensusDAO> censusStateMap = null;
+    Map<String, CensusDAO> censusStateMap = null;
     List<IndiaCensusDAO> censusList = null;
 
     public CensusAnalyser() {
         this.censusList = new ArrayList<IndiaCensusDAO>();
-        censusStateMap = new HashMap<>();
+        censusStateMap = new HashMap<String, CensusDAO>();
     }
     public int loadIndiaCensusData(String csvFilePath) throws CensusAnalyserException {
         try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath))) {
@@ -65,6 +65,30 @@ public class CensusAnalyser {
                 type = CensusAnalyserException.ExceptionType.CENSUS_DELIMITER_PROBLEM;
             } else if (e.getMessage().contains("Error capturing CSV header!")) {
                 type = CensusAnalyserException.ExceptionType.CENSUS_HEADER_PROBLEM;
+            }
+            throw new CensusAnalyserException(e.getMessage(), type);
+        } catch (CSVBuiderException e) {
+            throw new CensusAnalyserException(e.getMessage(), e.type.name());
+        }
+    }
+
+    public int loadUSCensusData(String csvFilePath) throws CensusAnalyserException {
+        try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath))) {
+            ICSVBuilder csvBuilder = CSVBuilderFactory.createCSVBuilder();
+            Iterator<USCensusCSV> csvIterator = csvBuilder.getCSVFileIterator(reader, USCensusCSV.class);
+            Iterable<USCensusCSV> csvIterable = () -> csvIterator;
+            StreamSupport.stream(csvIterable.spliterator(), false)
+                    .forEach(censusCSV -> censusStateMap.put(censusCSV.state, new CensusDAO(censusCSV)));
+            return censusStateMap.size();
+        } catch (IOException e) {
+            throw new CensusAnalyserException(e.getMessage(),
+                    CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
+        }  catch (RuntimeException e) {
+            CensusAnalyserException.ExceptionType type = null;
+            if (e.getMessage().contains("CsvRequiredFieldEmptyException")) {
+                type = CensusAnalyserException.ExceptionType.CENSUS_DELIMITER_PROBLEM;
+            } else if (e.getMessage().contains("Error capturing CSV header!")) {
+                type = CensusAnalyserException.ExceptionType.CENSUS_HEADER_PROBLEM ;
             }
             throw new CensusAnalyserException(e.getMessage(), type);
         } catch (CSVBuiderException e) {
